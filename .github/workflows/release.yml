@@ -1,0 +1,48 @@
+name: 发布 Linux 可执行文件
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: 构建并发布
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+
+      - name: 安装 Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          check-latest: true
+          cache: true
+
+      - name: 编译 Linux 可执行文件
+        env:
+          GOOS: linux
+          GOARCH: amd64
+          CGO_ENABLED: 0
+        run: |
+          mkdir -p dist
+          go build -o dist/ckm .
+
+      - name: 生成制品压缩包与校验文件
+        run: |
+          tar -czf dist/ckm-linux-amd64.tar.gz -C dist ckm
+          sha256sum dist/ckm-linux-amd64.tar.gz > dist/ckm-linux-amd64.sha256
+
+      - name: 发布 Release 制品
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/ckm-linux-amd64.tar.gz
+            dist/ckm-linux-amd64.sha256
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
