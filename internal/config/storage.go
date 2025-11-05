@@ -27,7 +27,7 @@ func NewFileStorage(path string) (*FileStorage, error) {
 		if err != nil {
 			return nil, err
 		}
-		base := filepath.Join(home, ".codex-manager")
+		base := filepath.Join(home, ".codex-switch")
 		path = filepath.Join(base, "config.json")
 	}
 

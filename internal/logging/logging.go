@@ -43,7 +43,7 @@ func Init(customPath string) error {
 				initErr = err
 				return
 			}
-			dir := filepath.Join(home, ".codex-manager", "logs")
+			dir := filepath.Join(home, ".codex-switch", "logs")
 			if err := os.MkdirAll(dir, 0o700); err != nil {
 				initErr = err
 				return

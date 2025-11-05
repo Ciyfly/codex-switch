@@ -41,7 +41,7 @@ func initConfig() {
 		os.Exit(1)
 	}
 
-	defaultDir := filepath.Join(userHome, ".codex-manager")
+	defaultDir := filepath.Join(userHome, ".codex-switch")
 	defaultCfgPath := filepath.Join(defaultDir, "config.json")
 
 	if cfgOverride != "" {
