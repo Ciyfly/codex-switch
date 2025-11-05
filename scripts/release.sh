@@ -1,29 +1,33 @@
 #!/usr/bin/env bash
 # 该脚本用于快速发布 codex-switch 版本：
-# 1. 验证环境与依赖；
-# 2. 运行一次交叉编译以确保可用；
+# 1. 校验环境与依赖；
+# 2. 运行一次交叉编译确保二进制可用；
 # 3. 创建 Git tag 并推送触发 GitHub Actions；
-# 4. 若安装了 GitHub CLI，可选在动作完成后手动补充 Release 说明。
+# 4. 可选附带发布说明（文件或单行文本）。
 
 set -euo pipefail
 
 if [[ $# -lt 1 ]]; then
-  echo "用法：$0 <版本号或标签> [发布说明文件]" >&2
+  echo "用法：$0 <版本号或标签> [发布说明]" >&2
+  echo "发布说明可以是文件路径或直接的一行文本" >&2
   exit 1
 fi
 
 INPUT_TAG="$1"
-NOTES_FILE="${2:-}"
+RAW_NOTES="${2-}"
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DIST_DIR="${PROJECT_ROOT}/dist"
 BINARY_NAME="ckm"
+TEMP_NOTES=""
 
-# 统一标签格式（允许输入 0.1 或 v0.1）
+# 统一标签格式
 if [[ "${INPUT_TAG}" == v* ]]; then
   TAG="${INPUT_TAG}"
 else
   TAG="v${INPUT_TAG}"
 fi
+
+declare -a NOTES_ARGS=()
 
 log() {
   printf "\033[1;34m[发布]\033[0m %s\n" "$1"
@@ -38,12 +42,25 @@ error() {
   exit 1
 }
 
+ensure_cleanup() {
+  if [[ -n "${TEMP_NOTES}" && -f "${TEMP_NOTES}" ]]; then
+    rm -f "${TEMP_NOTES}"
+  fi
+}
+trap ensure_cleanup EXIT
+
 if ! command -v go >/dev/null 2>&1; then
   error "未检测到 Go，请先安装 Go 1.21+ 工具链。"
 fi
 
-if [[ -n "$NOTES_FILE" && ! -f "$NOTES_FILE" ]]; then
-  error "发布说明文件不存在：${NOTES_FILE}"
+if [[ -n "${RAW_NOTES}" ]]; then
+  if [[ -f "${RAW_NOTES}" ]]; then
+    NOTES_ARGS=( -F "${RAW_NOTES}" )
+  else
+    TEMP_NOTES="$(mktemp)"
+    printf "%s\n" "${RAW_NOTES}" > "${TEMP_NOTES}"
+    NOTES_ARGS=( -F "${TEMP_NOTES}" )
+  fi
 fi
 
 if [[ -n "$(git status --porcelain)" ]]; then
@@ -60,8 +77,8 @@ GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o "${DIST_DIR}/${BINARY_NAME}" "
 rm -f "${DIST_DIR}/${BINARY_NAME}"
 
 log "创建 Git 标签 ${TAG}..."
-if [[ -n "$NOTES_FILE" ]]; then
-  git tag -a "${TAG}" -F "$NOTES_FILE"
+if [[ ${#NOTES_ARGS[@]} -gt 0 ]]; then
+  git tag -a "${TAG}" "${NOTES_ARGS[@]}"
 else
   git tag -a "${TAG}" -m "Release ${TAG}"
 fi
