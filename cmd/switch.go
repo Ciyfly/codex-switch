@@ -68,21 +68,9 @@ func runSwitch(cmd *cobra.Command, args []string) error {
 	idText := color.New(color.FgHiBlack).Sprint(key.ID)
 	fmt.Fprintf(cmd.OutOrStdout(), "%s 已切换到: %s %s\n", success, nameText, idText)
 	fmt.Fprintf(cmd.OutOrStdout(), "  类型: %s\n", color.New(color.FgMagenta).Sprint(strings.ToUpper(key.Type)))
-	fmt.Fprintf(cmd.OutOrStdout(), "  剩余额度: %s\n", color.New(color.FgYellow).Sprint(formatRemaining(key)))
 	fmt.Fprintf(cmd.OutOrStdout(), "  Codex 配置: %s\n", color.New(color.FgGreen).Sprint("已同步"))
 
 	logging.Infof("切换 Key 至 %s (%s)", key.Name, key.ID)
 
 	return nil
-}
-
-func formatRemaining(key config.APIKey) string {
-	if key.QuotaLimit <= 0 {
-		return fmt.Sprintf("%0.2f / ∞", key.QuotaUsed)
-	}
-	remaining := key.QuotaLimit - key.QuotaUsed
-	if remaining < 0 {
-		remaining = 0
-	}
-	return fmt.Sprintf("%.2f / %.2f", remaining, key.QuotaLimit)
 }

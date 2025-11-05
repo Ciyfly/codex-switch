@@ -12,15 +12,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// 支持的额度类型定义
-const (
-	QuotaDaily     = "daily"
-	QuotaWeekly    = "weekly"
-	QuotaMonthly   = "monthly"
-	QuotaYearly    = "yearly"
-	QuotaUnlimited = "unlimited"
-)
-
 // 支持的 API 类型
 const (
 	TypeOpenAI = "openai"
@@ -38,16 +29,12 @@ type APIKey struct {
 	APIKey              string    `json:"api_key"`
 	BaseURL             string    `json:"base_url"`
 	Type                string    `json:"type"`
-	QuotaType           string    `json:"quota_type"`
-	QuotaLimit          float64   `json:"quota_limit"`
-	QuotaUsed           float64   `json:"quota_used"`
 	Description         string    `json:"description"`
 	CreatedAt           time.Time `json:"created_at"`
 	LastChecked         time.Time `json:"last_checked"`
 	LastUsed            time.Time `json:"last_used"`
 	Active              bool      `json:"active"`
 	Tags                []string  `json:"tags"`
-	ManualTrack         bool      `json:"manual_tracking"`
 	Provider            string    `json:"provider,omitempty"`
 	PreferredAuthMethod string    `json:"preferred_auth_method,omitempty"`
 	WireAPI             string    `json:"wire_api,omitempty"`
@@ -236,10 +223,6 @@ func (m *Manager) AddKey(input APIKey) (APIKey, error) {
 		input.Type = TypeOpenAI
 	}
 
-	if input.QuotaType == "" {
-		input.QuotaType = QuotaMonthly
-	}
-
 	if input.ID == "" {
 		input.ID = m.generateID()
 	}
@@ -306,9 +289,6 @@ func (m *Manager) UpdateKey(updated APIKey) error {
 	}
 	if updated.Type == "" {
 		updated.Type = existing.Type
-	}
-	if updated.QuotaType == "" {
-		updated.QuotaType = existing.QuotaType
 	}
 	if updated.CreatedAt.IsZero() {
 		updated.CreatedAt = existing.CreatedAt
@@ -442,10 +422,6 @@ func (m *Manager) ListKeys(sortBy string) ([]APIKey, error) {
 	items := append([]APIKey(nil), m.cfg.Keys...)
 
 	switch sortBy {
-	case "usage":
-		sort.Slice(items, func(i, j int) bool {
-			return items[i].QuotaUsed/items[i].QuotaLimit > items[j].QuotaUsed/items[j].QuotaLimit
-		})
 	case "name":
 		sort.Slice(items, func(i, j int) bool {
 			return strings.ToLower(items[i].Name) < strings.ToLower(items[j].Name)
@@ -460,31 +436,6 @@ func (m *Manager) ListKeys(sortBy string) ([]APIKey, error) {
 	}
 
 	return items, nil
-}
-
-// UpdateUsage 更新额度使用信息
-func (m *Manager) UpdateUsage(id string, used float64, limit float64, lastChecked time.Time) error {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-
-	if !m.loaded {
-		return errors.New("配置尚未加载")
-	}
-
-	for i, k := range m.cfg.Keys {
-		if k.ID == id {
-			m.cfg.Keys[i].QuotaUsed = used
-			if limit > 0 {
-				m.cfg.Keys[i].QuotaLimit = limit
-			}
-			if !lastChecked.IsZero() {
-				m.cfg.Keys[i].LastChecked = lastChecked
-			}
-			return nil
-		}
-	}
-
-	return fmt.Errorf("未找到 ID %s", id)
 }
 
 // TouchKey 更新最后使用时间

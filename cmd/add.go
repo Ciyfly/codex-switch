@@ -15,18 +15,9 @@ import (
 var (
 	addName       string
 	addAPIKey     string
-	addQuotaType  string
 	addTags       string
 	addConfigPath string
 )
-
-var supportedQuotaTypes = map[string]bool{
-	config.QuotaDaily:     true,
-	config.QuotaWeekly:    true,
-	config.QuotaMonthly:   true,
-	config.QuotaYearly:    true,
-	config.QuotaUnlimited: true,
-}
 
 func init() {
 	addCmd := &cobra.Command{
@@ -37,7 +28,6 @@ func init() {
 
 	addCmd.Flags().StringVar(&addName, "name", "", "Key 名称")
 	addCmd.Flags().StringVar(&addAPIKey, "key", "", "API Key 内容")
-	addCmd.Flags().StringVar(&addQuotaType, "quota-type", config.QuotaMonthly, "额度类型(daily/weekly/monthly/yearly/unlimited)")
 	addCmd.Flags().StringVar(&addTags, "tags", "", "标签，逗号分隔")
 	addCmd.Flags().StringVar(&addConfigPath, "config-file", "", "配置文件路径，使用文件内容完整替换 Codex config.toml")
 
@@ -65,27 +55,16 @@ func runAdd(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 
-	quotaType := strings.ToLower(strings.TrimSpace(addQuotaType))
-	if quotaType == "" {
-		quotaType = config.QuotaMonthly
-	}
-	if !supportedQuotaTypes[quotaType] {
-		return fmt.Errorf("不支持的额度类型: %s", quotaType)
-	}
-
 	manager, err := mustLoadManager(cmd)
 	if err != nil {
 		return err
 	}
 
 	newKey := config.APIKey{
-		Name:       name,
-		APIKey:     apiKey,
-		QuotaType:  quotaType,
-		QuotaLimit: 0,
-		QuotaUsed:  0,
-		Tags:       normalizeTags(addTags),
-		RawConfig:  rawConfig,
+		Name:      name,
+		APIKey:    apiKey,
+		Tags:      normalizeTags(addTags),
+		RawConfig: rawConfig,
 	}
 
 	created, err := manager.AddKey(newKey)

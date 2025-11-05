@@ -1,11 +1,11 @@
 # Codex Key Manager
 
-Codex Key Manager 是一个命令行工具，用于集中管理多个 Codex/OpenAI API Key，并提供额度监控、配置导入导出以及一键切换能力，帮助团队和个人始终保持在正确的密钥与额度状态下工作。
+Codex Key Manager 是一个命令行工具，用于集中管理多个 Codex/OpenAI API Key，并提供配置导入导出以及一键切换能力，帮助团队和个人快速切换工作环境并保障密钥安全。
 
 ## 功能亮点
 - 多密钥生命周期管理：支持新增、查看、切换、删除密钥，并自动记录激活状态。
-- 配置文件统一存放：默认保存在 `~/.github.com/codex-switch/codex-switch/config.json`，支持自定义路径覆盖。
-- 额度与标签管理：内置额度类型（每日/每周/每月/年度/不限）和标签，方便标注使用场景。
+- 配置文件统一存放：默认保存在 `~/.codex-manager/config.json`，支持自定义路径覆盖。
+- 标签管理：可为密钥打标签，便于按业务或环境进行筛选。
 - 配置导入导出：可导入现有 Codex 配置文件或导出为其他环境复用。
 - 彩色终端体验：命令结果采用彩色表格与状态提示，关键信息一目了然。
 
@@ -38,7 +38,6 @@ go build -o bin/ckm ./...
 ckm add \
   --name "生产环境 Key" \
   --key "sk-xxxx" \
-  --quota-type monthly \
   --config-file ~/.config/codex/config.toml
 
 # 2. 查看当前所有密钥
@@ -47,7 +46,7 @@ ckm list
 # 3. 切换当前激活密钥
 ckm switch <密钥ID>
 
-# 4. 查看当前密钥详情（含额度使用情况）
+# 4. 查看当前密钥详情
 ckm show --id <密钥ID>
 ```
 
@@ -59,18 +58,17 @@ ckm show --id <密钥ID>
 | `ckm add` | 添加新的 API Key，并导入对应配置文件内容 |
 | `ckm list` | 以表格形式列出所有已管理的密钥 |
 | `ckm switch <id>` | 将指定密钥设置为当前激活密钥 |
-| `ckm show --id <id>` | 查看单个密钥的详情与额度使用 |
+| `ckm show --id <id>` | 查看单个密钥的详细信息 |
 | `ckm remove <id>` | 删除不再使用的密钥记录 |
-| `ckm check` | 查询当前激活密钥的额度状态 |
 | `ckm export --format json` | 导出全部密钥配置，便于备份或迁移 |
 | `ckm import --file <path>` | 从已有备份中恢复密钥信息 |
 | `ckm remote push` / `pull` | 推送或拉取远端备份（当前基于 Backblaze B2） |
-| `ckm update --id <id>` | 更新指定密钥的名称、额度类型或配置文件 |
+| `ckm update --id <id>` | 更新指定密钥的名称、标签或配置文件 |
 
 运行任意命令时可附加 `-h/--help` 获取详细参数说明。
 
 ## 配置与安全
-- 所有配置默认为 JSON 格式存放在 `~/.github.com/codex-switch/codex-switch/config.json`，文件权限将自动设置为 `0600`，避免敏感信息泄露。
+- 所有配置默认为 JSON 格式存放在 `~/.codex-manager/config.json`，文件权限将自动设置为 `0600`，避免敏感信息泄露。
 - API Key 在输出时会自动脱敏，仅在必要场景下展示完整值。
 - 可通过 `CKM_CONFIG` 环境变量或 `--config` 参数覆盖配置文件路径，方便在 CI 或多账户环境中使用。
 

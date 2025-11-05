@@ -24,7 +24,7 @@ func init() {
 		RunE:  runList,
 	}
 
-	listCmd.Flags().StringVar(&listSort, "sort", "default", "排序字段: default/usage/name")
+	listCmd.Flags().StringVar(&listSort, "sort", "default", "排序字段: default/name")
 	listCmd.Flags().StringVar(&listFormat, "format", "table", "输出格式: table/json")
 	listCmd.Flags().StringVar(&listFilterType, "filter-type", "", "按类型筛选: openai/crs")
 
@@ -69,11 +69,6 @@ func runList(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 
-	totalUsage := 0.0
-	for _, k := range cfg.Keys {
-		totalUsage += k.QuotaUsed
-	}
-
 	activeName := "无"
 	for _, k := range cfg.Keys {
 		if k.Active {
@@ -82,7 +77,7 @@ func runList(cmd *cobra.Command, _ []string) error {
 		}
 	}
 
-	fmt.Fprintf(cmd.OutOrStdout(), "\n总计: %d 个 Key  |  当前激活: %s  |  总消费: $%.2f\n", len(keys), activeName, totalUsage)
+	fmt.Fprintf(cmd.OutOrStdout(), "\n总计: %d 个 Key  |  当前激活: %s\n", len(keys), activeName)
 	logging.Debugf("列出 %d 个 Key，激活: %s", len(keys), activeName)
 	return nil
 }

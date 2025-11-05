@@ -1,9 +1,6 @@
 package config
 
-import (
-	"testing"
-	"time"
-)
+import "testing"
 
 // TestManagerAddAndActive 验证添加 Key 并自动激活的逻辑
 func TestManagerAddAndActive(t *testing.T) {
@@ -15,13 +12,11 @@ func TestManagerAddAndActive(t *testing.T) {
 	}
 
 	key := APIKey{
-		Name:       "主力账号",
-		APIKey:     "sk-test",
-		BaseURL:    "https://api.openai.com/v1",
-		Type:       TypeOpenAI,
-		QuotaType:  QuotaMonthly,
-		QuotaLimit: 100,
-		Active:     true,
+		Name:    "主力账号",
+		APIKey:  "sk-test",
+		BaseURL: "https://api.openai.com/v1",
+		Type:    TypeOpenAI,
+		Active:  true,
 	}
 
 	created, err := manager.AddKey(key)
@@ -52,12 +47,10 @@ func TestManagerUpdate(t *testing.T) {
 	}
 
 	key := APIKey{
-		Name:       "测试账号",
-		APIKey:     "sk-1",
-		BaseURL:    "https://example.com",
-		Type:       TypeCRS,
-		QuotaType:  QuotaUnlimited,
-		QuotaLimit: 0,
+		Name:    "测试账号",
+		APIKey:  "sk-1",
+		BaseURL: "https://example.com",
+		Type:    TypeCRS,
 	}
 
 	added, err := manager.AddKey(key)
@@ -66,7 +59,7 @@ func TestManagerUpdate(t *testing.T) {
 	}
 
 	added.Description = "更新描述"
-	added.QuotaUsed = 42
+	added.Tags = []string{"prod", "backup"}
 	if err := manager.UpdateKey(added); err != nil {
 		t.Fatalf("更新 Key 失败: %v", err)
 	}
@@ -78,39 +71,7 @@ func TestManagerUpdate(t *testing.T) {
 	if got.Description != "更新描述" {
 		t.Fatalf("描述未更新: %s", got.Description)
 	}
-	if got.QuotaUsed != 42 {
-		t.Fatalf("额度未更新: %f", got.QuotaUsed)
-	}
-}
-
-// TestCalculateRemaining 验证额度计算
-func TestCalculateRemaining(t *testing.T) {
-	now := time.Now()
-	key := APIKey{
-		QuotaLimit:  100,
-		QuotaUsed:   40,
-		QuotaType:   QuotaMonthly,
-		LastChecked: now.AddDate(0, -1, 0),
-	}
-
-	remain := CalculateRemaining(key)
-	if remain != 100 {
-		t.Fatalf("月度额度应在新周期重置: %f", remain)
-	}
-
-	key.QuotaType = QuotaDaily
-	key.LastChecked = now
-	key.QuotaUsed = 70
-	remain = CalculateRemaining(key)
-	if remain != 30 {
-		t.Fatalf("剩余额度计算错误: %f", remain)
-	}
-
-	key.QuotaType = QuotaYearly
-	key.LastChecked = now.AddDate(-1, 0, 0)
-	key.QuotaUsed = 10
-	remain = CalculateRemaining(key)
-	if remain != 100 {
-		t.Fatalf("年度额度应在新周期重置: %f", remain)
+	if len(got.Tags) != 2 || got.Tags[0] != "prod" {
+		t.Fatalf("标签更新失败: %#v", got.Tags)
 	}
 }

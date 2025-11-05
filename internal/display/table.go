@@ -41,8 +41,7 @@ func PrintKeyTable(out io.Writer, keys []config.APIKey) {
 		ColorPrimary.Sprint("名称"),
 		ColorPrimary.Sprint("ID"),
 		ColorPrimary.Sprint("类型"),
-		ColorPrimary.Sprint("额度类型"),
-		ColorPrimary.Sprint("使用情况"),
+		ColorPrimary.Sprint("标签"),
 		ColorPrimary.Sprint("最后使用"),
 	})
 
@@ -51,9 +50,8 @@ func PrintKeyTable(out io.Writer, keys []config.APIKey) {
 		{Number: 2, Align: text.AlignLeft, WidthMin: 12},
 		{Number: 3, Align: text.AlignCenter, WidthMax: 6},
 		{Number: 4, Align: text.AlignCenter, WidthMax: 10},
-		{Number: 5, Align: text.AlignCenter, WidthMax: 14},
-		{Number: 6, Align: text.AlignLeft, WidthMin: 22},
-		{Number: 7, Align: text.AlignLeft, WidthMin: 16},
+		{Number: 5, Align: text.AlignLeft, WidthMin: 16},
+		{Number: 6, Align: text.AlignLeft, WidthMin: 16},
 	})
 
 	for _, key := range keys {
@@ -62,13 +60,17 @@ func PrintKeyTable(out io.Writer, keys []config.APIKey) {
 			status = ColorActive.Sprint("● 激活")
 		}
 
+		tagDisplay := "-"
+		if len(key.Tags) > 0 {
+			tagDisplay = strings.Join(key.Tags, ", ")
+		}
+
 		writer.AppendRow(prettytable.Row{
 			status,
 			key.Name,
 			key.ID,
 			strings.ToUpper(key.Type),
-			translateQuotaType(key.QuotaType),
-			buildQuotaInfo(key),
+			tagDisplay,
 			utils.FormatRelativeTime(key.LastUsed),
 		})
 	}
@@ -99,19 +101,7 @@ func PrintKeyDetail(out io.Writer, key config.APIKey) {
 		fmt.Fprintf(out, "  配置片段:      已提供\n")
 	}
 
-	fmt.Fprintf(out, "\n  额度信息\n  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
-	fmt.Fprintf(out, "  类型:          %s\n", translateQuotaType(key.QuotaType))
-	if key.QuotaLimit > 0 {
-		fmt.Fprintf(out, "  限额:          %s\n", utils.FormatCurrency(key.QuotaLimit))
-		fmt.Fprintf(out, "  已使用:        %s (%.1f%%)\n", utils.FormatCurrency(key.QuotaUsed), usagePercent(key.QuotaUsed, key.QuotaLimit))
-		fmt.Fprintf(out, "  剩余:          %s\n", utils.FormatCurrency(key.QuotaLimit-key.QuotaUsed))
-		fmt.Fprintf(out, "\n  进度: %s %.1f%%\n", RenderProgressBar(key.QuotaUsed, key.QuotaLimit, 20), usagePercent(key.QuotaUsed, key.QuotaLimit))
-	} else {
-		fmt.Fprintf(out, "  限额:          不限\n")
-		fmt.Fprintf(out, "  已使用:        %s\n", utils.FormatCurrency(key.QuotaUsed))
-	}
-
-	fmt.Fprintf(out, "\n  使用统计\n  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
+	fmt.Fprintf(out, "\n  时间信息\n  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
 	fmt.Fprintf(out, "  创建时间:      %s\n", key.CreatedAt.Format(time.RFC3339))
 	fmt.Fprintf(out, "  最后检查:      %s\n", key.LastChecked.Format(time.RFC3339))
 	fmt.Fprintf(out, "  最后使用:      %s\n", key.LastUsed.Format(time.RFC3339))
@@ -122,37 +112,4 @@ func PrintKeyDetail(out io.Writer, key config.APIKey) {
 	if strings.TrimSpace(key.Description) != "" {
 		fmt.Fprintf(out, "  备注:          %s\n", key.Description)
 	}
-}
-
-func buildQuotaInfo(key config.APIKey) string {
-	if key.QuotaLimit <= 0 {
-		return fmt.Sprintf("%s / ∞", utils.FormatCurrency(key.QuotaUsed))
-	}
-	percentage := usagePercent(key.QuotaUsed, key.QuotaLimit)
-	bar := RenderProgressBar(key.QuotaUsed, key.QuotaLimit, 10)
-	return fmt.Sprintf("%s/%s  %s %.1f%%", utils.FormatCurrency(key.QuotaUsed), utils.FormatCurrency(key.QuotaLimit), bar, percentage)
-}
-
-func translateQuotaType(q string) string {
-	switch strings.ToLower(q) {
-	case config.QuotaDaily:
-		return "天卡"
-	case config.QuotaWeekly:
-		return "周卡"
-	case config.QuotaMonthly:
-		return "月卡"
-	case config.QuotaYearly:
-		return "年卡"
-	case config.QuotaUnlimited:
-		return "不限制"
-	default:
-		return q
-	}
-}
-
-func usagePercent(used, limit float64) float64 {
-	if limit <= 0 {
-		return 0
-	}
-	return used / limit * 100
 }

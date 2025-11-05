@@ -77,12 +77,6 @@ func extractField(field string, key config.APIKey) (string, error) {
 		return key.BaseURL, nil
 	case "type":
 		return key.Type, nil
-	case "quota_type":
-		return key.QuotaType, nil
-	case "quota_limit":
-		return fmt.Sprintf("%.2f", key.QuotaLimit), nil
-	case "quota_used":
-		return fmt.Sprintf("%.2f", key.QuotaUsed), nil
 	case "raw_config":
 		return key.RawConfig, nil
 	case "name":

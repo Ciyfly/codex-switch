@@ -15,7 +15,6 @@ var (
 	updateName       string
 	updateNewName    string
 	updateAPIKey     string
-	updateQuotaType  string
 	updateTags       string
 	updateConfigPath string
 )
@@ -31,7 +30,6 @@ func init() {
 	updateCmd.Flags().StringVar(&updateName, "name", "", "目标 Key 的名称")
 	updateCmd.Flags().StringVar(&updateNewName, "set-name", "", "更新后的名称")
 	updateCmd.Flags().StringVar(&updateAPIKey, "set-key", "", "新的 API Key")
-	updateCmd.Flags().StringVar(&updateQuotaType, "set-quota-type", "", "新的额度类型")
 	updateCmd.Flags().StringVar(&updateTags, "set-tags", "", "重置标签(逗号分隔)")
 	updateCmd.Flags().StringVar(&updateConfigPath, "set-config-file", "", "指定配置文件路径，使用文件内容完整替换 Codex config.toml")
 
@@ -64,13 +62,6 @@ func runUpdate(cmd *cobra.Command, _ []string) error {
 	}
 	if strings.TrimSpace(updateAPIKey) != "" {
 		updated.APIKey = strings.TrimSpace(updateAPIKey)
-	}
-	if strings.TrimSpace(updateQuotaType) != "" {
-		quotaType := strings.ToLower(strings.TrimSpace(updateQuotaType))
-		if !supportedQuotaTypes[quotaType] {
-			return fmt.Errorf("不支持的额度类型: %s", quotaType)
-		}
-		updated.QuotaType = quotaType
 	}
 	if cmd.Flags().Lookup("set-tags").Changed {
 		updated.Tags = normalizeTags(updateTags)
