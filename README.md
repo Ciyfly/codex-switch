@@ -73,6 +73,17 @@ ckm show --id <密钥ID>
 
 欢迎通过 Issue 或 PR 提交改进建议，帮助我们共同完善 Codex Key Manager。
 
+## 发布脚本
+
+项目提供 `scripts/release.sh` 便于本地快速发布：
+
+```bash
+# 假设已登录 GitHub CLI，并完成 git tag
+./scripts/release.sh v0.1.0 CHANGELOG.md
+```
+
+脚本会在 `dist/` 目录生成 Linux/amd64 可执行文件、压缩包与 SHA256 校验文件，并自动创建/更新同名 GitHub Release。若未提供发布说明文件，将使用默认说明。
+
 ## 延伸阅读
 
 - `docs/设计方案.md`：包含完整的架构设计与实现细节。
