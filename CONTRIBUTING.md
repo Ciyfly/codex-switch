@@ -32,7 +32,7 @@ go test ./...
 - **功能需求**：说明使用场景、期望收益与可能的替代方案。
 
 ## 发布流程
-- 本地可通过 `scripts/release.sh <tag>` 进行验收，与 GitHub Actions 的流程保持一致。
+- 发布前可执行 `scripts/release.sh <version>`，脚本会进行交叉编译验证并推送标签，交由 GitHub Actions 创建 Release。
 - 发布前请确保更新 `CHANGELOG`（若存在）并同步 `README` 中的版本信息。
 
 欢迎提交改进建议或文档更新，感谢你的贡献！

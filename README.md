@@ -87,11 +87,11 @@ ckm show --id <密钥ID>
 项目提供 `scripts/release.sh` 便于本地快速发布：
 
 ```bash
-# 假设已登录 GitHub CLI，并完成 git tag
-./scripts/release.sh v0.1.0 CHANGELOG.md
+# 自动补齐 v 前缀、确保编译通过、创建并推送标签
+./scripts/release.sh 0.1 初版说明.md
 ```
 
-脚本会在 `dist/` 目录生成 Linux/amd64 可执行文件、压缩包与 SHA256 校验文件，并自动创建/更新同名 GitHub Release。需要预先安装 GitHub CLI (`gh`) 并完成 `gh auth login`，同时确保本机具备 `sha256sum`（macOS 可通过 `brew install coreutils` 获取 `gsha256sum`）。若未提供发布说明文件，将使用默认说明。
+脚本会执行一次 `linux/amd64` 交叉编译以验证代码，然后创建标签 `v0.1` 并推送到远程仓库，随即触发 GitHub Actions 生成 Release 及制品。第二个参数可选，若提供将作为标签注释（同时用于 Release 描述）。若已安装并登录 GitHub CLI (`gh`)，脚本会提示在动作完成后打开 Release 页面；未安装 `gh` 也不影响流程。
 
 ## 延伸阅读
 
