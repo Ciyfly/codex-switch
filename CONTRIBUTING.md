@@ -1,6 +1,6 @@
 # 贡献指南
 
-感谢你对 Codex Key Manager 的关注！为了让协作更加顺畅，请在提交 Issue 或 Pull Request 前阅读以下说明。
+感谢你对 codex-switch 的关注！为了让协作更加顺畅，请在提交 Issue 或 Pull Request 前阅读以下说明。
 
 ## 环境准备
 - Go 1.21 及以上版本

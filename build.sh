@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 编译 Codex Key Manager 的辅助脚本，包含彩色日志输出，便于快速定位执行状态。
+# 编译 codex-switch 的辅助脚本，包含彩色日志输出，便于快速定位执行状态。
 set -euo pipefail
 
 GREEN="\033[1;32m"
@@ -32,7 +32,7 @@ if ! command -v go >/dev/null 2>&1; then
 fi
 
 log_info "当前 Go 版本: $(go version)"
-log_info "开始编译 Codex Key Manager..."
+log_info "开始编译 codex-switch..."
 
 mkdir -p bin
 

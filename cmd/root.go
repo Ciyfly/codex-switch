@@ -17,8 +17,8 @@ var (
 	cfgOverride string
 	rootCmd     = &cobra.Command{
 		Use:     "ckm",
-		Short:   "Codex Key Manager - 多 Key 管理工具",
-		Long:    color.New(color.FgCyan).Sprintf("Codex Key Manager\n一个用于管理 Codex/OpenAI API Key 的命令行工具"),
+		Short:   "codex-switch - 多 Key 管理工具",
+		Long:    color.New(color.FgCyan).Sprintf("codex-switch\n一个用于管理 Codex/OpenAI API Key 的命令行工具"),
 		Version: version.Version,
 	}
 )

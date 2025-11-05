@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 该脚本用于本地快速发布 Codex Key Manager 版本：
+# 该脚本用于本地快速发布 codex-switch 版本：
 # 1. 校验环境变量与工具依赖；
 # 2. 构建 Linux/amd64 无 CGO 可执行文件；
 # 3. 打包压缩并生成 SHA256 校验文件；

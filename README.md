@@ -1,6 +1,6 @@
-# Codex Key Manager
+# codex-switch
 
-Codex Key Manager 是一个命令行工具，用于集中管理多个 Codex/OpenAI API Key，并提供配置导入导出以及一键切换能力，帮助团队和个人快速切换工作环境并保障密钥安全。
+codex-switch 是一个命令行工具，用于集中管理多个 Codex/OpenAI API Key，并提供配置导入导出以及一键切换能力，帮助团队和个人快速切换工作环境并保障密钥安全。
 
 ## 功能亮点
 - 多密钥生命周期管理：支持新增、查看、切换、删除密钥，并自动记录激活状态。
@@ -78,7 +78,7 @@ ckm show --id <密钥ID>
 3. 提交前运行 `golangci-lint run` 保持代码风格一致。
 4. 在 Pull Request 中说明变更动机、影响范围以及验证方式。
 
-欢迎通过 Issue 或 PR 提交改进建议，帮助我们共同完善 Codex Key Manager。
+欢迎通过 Issue 或 PR 提交改进建议，帮助我们共同完善 codex-switch。
 
 更多细节请参见 `CONTRIBUTING.md` 与 `CODE_OF_CONDUCT.md`。
 

@@ -13,7 +13,7 @@ func init() {
 		Use:   "version",
 		Short: "显示当前版本信息",
 		Run: func(cmd *cobra.Command, _ []string) {
-			fmt.Fprintf(cmd.OutOrStdout(), "Codex Key Manager %s\n", version.Version)
+			fmt.Fprintf(cmd.OutOrStdout(), "codex-switch %s\n", version.Version)
 		},
 	}
 
