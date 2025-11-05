@@ -4,7 +4,7 @@ Codex Key Manager 是一个命令行工具，用于集中管理多个 Codex/Open
 
 ## 功能亮点
 - 多密钥生命周期管理：支持新增、查看、切换、删除密钥，并自动记录激活状态。
-- 配置文件统一存放：默认保存在 `~/.codex-manager/config.json`，支持自定义路径覆盖。
+- 配置文件统一存放：默认保存在 `~/.github.com/codex-switch/codex-switch/config.json`，支持自定义路径覆盖。
 - 额度与标签管理：内置额度类型（每日/每周/每月/年度/不限）和标签，方便标注使用场景。
 - 配置导入导出：可导入现有 Codex 配置文件或导出为其他环境复用。
 - 彩色终端体验：命令结果采用彩色表格与状态提示，关键信息一目了然。
@@ -14,9 +14,18 @@ Codex Key Manager 是一个命令行工具，用于集中管理多个 Codex/Open
 - 可访问 Codex/OpenAI API 的网络环境
 - 已准备好至少一个可用的 API Key
 
-## 本地安装
+## 安装方式
+
+### 通过 go install
 ```bash
-git clone https://github.com/your-org/codex-switch.git
+go install github.com/codex-switch/codex-switch/cmd/ckm@latest
+```
+
+该方式会直接在 GOPATH/bin 下生成 `ckm` 可执行文件，确保 Go 环境已配置 `GOBIN` 或 `GOPATH/bin` 已加入 `PATH`。
+
+### 本地源码构建
+```bash
+git clone https://github.com/codex-switch/codex-switch.git
 cd codex-switch
 go build -o bin/ckm ./...
 ```
@@ -61,7 +70,7 @@ ckm show --id <密钥ID>
 运行任意命令时可附加 `-h/--help` 获取详细参数说明。
 
 ## 配置与安全
-- 所有配置默认为 JSON 格式存放在 `~/.codex-manager/config.json`，文件权限将自动设置为 `0600`，避免敏感信息泄露。
+- 所有配置默认为 JSON 格式存放在 `~/.github.com/codex-switch/codex-switch/config.json`，文件权限将自动设置为 `0600`，避免敏感信息泄露。
 - API Key 在输出时会自动脱敏，仅在必要场景下展示完整值。
 - 可通过 `CKM_CONFIG` 环境变量或 `--config` 参数覆盖配置文件路径，方便在 CI 或多账户环境中使用。
 
@@ -73,6 +82,8 @@ ckm show --id <密钥ID>
 
 欢迎通过 Issue 或 PR 提交改进建议，帮助我们共同完善 Codex Key Manager。
 
+更多细节请参见 `CONTRIBUTING.md` 与 `CODE_OF_CONDUCT.md`。
+
 ## 发布脚本
 
 项目提供 `scripts/release.sh` 便于本地快速发布：
@@ -82,7 +93,7 @@ ckm show --id <密钥ID>
 ./scripts/release.sh v0.1.0 CHANGELOG.md
 ```
 
-脚本会在 `dist/` 目录生成 Linux/amd64 可执行文件、压缩包与 SHA256 校验文件，并自动创建/更新同名 GitHub Release。若未提供发布说明文件，将使用默认说明。
+脚本会在 `dist/` 目录生成 Linux/amd64 可执行文件、压缩包与 SHA256 校验文件，并自动创建/更新同名 GitHub Release。需要预先安装 GitHub CLI (`gh`) 并完成 `gh auth login`，同时确保本机具备 `sha256sum`（macOS 可通过 `brew install coreutils` 获取 `gsha256sum`）。若未提供发布说明文件，将使用默认说明。
 
 ## 延伸阅读
 

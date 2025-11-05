@@ -31,7 +31,7 @@ jobs:
           CGO_ENABLED: 0
         run: |
           mkdir -p dist
-          go build -o dist/ckm .
+          go build -o dist/ckm ./cmd/ckm
 
       - name: 生成制品压缩包与校验文件
         run: |

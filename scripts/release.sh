@@ -43,7 +43,7 @@ fi
 
 log "开始构建 Linux/amd64 可执行文件..."
 mkdir -p "${DIST_DIR}"
-GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o "${DIST_DIR}/${BINARY_NAME}" "${PROJECT_ROOT}"
+GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o "${DIST_DIR}/${BINARY_NAME}" "${PROJECT_ROOT}/cmd/ckm"
 
 log "生成压缩包与校验文件..."
 tar -czf "${DIST_DIR}/${ARCHIVE_NAME}" -C "${DIST_DIR}" "${BINARY_NAME}"
